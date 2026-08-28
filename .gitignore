@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+EncodeFile.p
+*.log
+.env
+serviceAccountKey.json
