@@ -18,7 +18,7 @@ app.secret_key = 'your-secret-key-change-this'
 try:
     cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred, {
-        'databaseURL': "https://smart-attendance-system-745b6-default-rtdb.firebaseio.com/"
+        'databaseURL': "Firebase_URL"
     })
     print("✅ Firebase connected")
 except Exception as e:
