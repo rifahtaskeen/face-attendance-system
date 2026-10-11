@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>🎓 Smart Attendance System</h1>
+                <p>Attendance Records</p>
+            </div>
+            <div class="header-info">
+                <span class="status">● Connected</span>
+                <span id="time"></span>
+            </div>
+        </header>
+        <nav class="tabs">
+            <a href="/" class="tab-btn">📷 Live Recognition</a>
+            <a href="/attendance" class="tab-btn active">📊 Attendance</a>
+            <a href="/students" class="tab-btn">👥 Students</a>
+            <a href="/stats" class="tab-btn">📈 Statistics</a>
+        </nav>
+        <div class="tab-content active">
+            <div class="attendance-section">
+                <h2>📊 Attendance Records</h2>
+                <div class="attendance-controls">
+                    <a href="/" class="btn btn-secondary">← Back</a>
+                    <span class="badge">Total: {{ records|length }} records</span>
+                </div>
+                <div class="table-container">
+                    {% if records %}
+                    <table id="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Time</th>
+                                <th>Date</th>
+                                <th>Mask</th>
+                                <th>Eyewear</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>{{ record.student_id }}</td>
+                                <td>{{ record.name }}</td>
+                                <td>{{ record.time }}</td>
+                                <td>{{ record.date }}</td>
+                                <td>{{ record.mask }}</td>
+                                <td>{{ record.eyewear }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center">No attendance records found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
