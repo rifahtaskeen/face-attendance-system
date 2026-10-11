@@ -9,7 +9,7 @@ from firebase_admin import storage
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': "https://smart-attendance-system-745b6-default-rtdb.firebaseio.com/",
+    'databaseURL': "firebase_link",
     'storageBucket': "your-project-id.appspot.com"
 })
 folderPath = 'Images'
