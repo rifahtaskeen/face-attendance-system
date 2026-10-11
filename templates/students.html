@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>🎓 Smart Attendance System</h1>
+                <p>Registered Students</p>
+            </div>
+            <div class="header-info">
+                <span class="status">● Connected</span>
+                <span id="time"></span>
+            </div>
+        </header>
+        <nav class="tabs">
+            <a href="/" class="tab-btn">📷 Live Recognition</a>
+            <a href="/attendance" class="tab-btn">📊 Attendance</a>
+            <a href="/students" class="tab-btn active">👥 Students</a>
+            <a href="/stats" class="tab-btn">📈 Statistics</a>
+        </nav>
+        <div class="tab-content active">
+            <div class="students-section">
+                <h2>👥 Registered Students</h2>
+                <div class="attendance-controls">
+                    <a href="/" class="btn btn-secondary">← Back</a>
+                    <span class="badge">Total: {{ students|length }} students</span>
+                </div>
+                <div class="students-grid">
+                    {% if students %}
+                        {% for student in students %}
+                        <div class="student-card">
+                            <div class="name">{{ student.name }}</div>
+                            <div class="id">ID: {{ student.student_id }}</div>
+                            <div class="info">{{ student.major or 'No major' }} • Year {{ student.year or 'N/A' }}</div>
+                            <div class="attendance-count">✅ {{ student.attendance }} attendances</div>
+                            <div class="info" style="font-size:11px;color:#a0aec0;">Last: {{ student.last_attendance }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center" style="grid-column:1/-1;">No students found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
