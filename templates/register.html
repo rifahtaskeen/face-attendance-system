@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>🎓 Smart Attendance System</h1>
+                <p>Register New Student</p>
+            </div>
+            <div class="header-info">
+                <span class="status">● Connected</span>
+                <span id="time"></span>
+            </div>
+        </header>
+        <nav class="tabs">
+            <a href="/" class="tab-btn">📷 Live Recognition</a>
+            <a href="/register" class="tab-btn active">📝 Register</a>
+            <a href="/attendance" class="tab-btn">📊 Attendance</a>
+            <a href="/students" class="tab-btn">👥 Students</a>
+            <a href="/stats" class="tab-btn">📈 Statistics</a>
+        </nav>
+        <div class="tab-content active">
+            <div class="register-section">
+                <h2>📝 Register New Student</h2>
+                <p style="color:#718096;margin-bottom:20px;">Fill in the details and capture a face image to register a new student.</p>
+                
+                <form method="POST" action="/register">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student ID *</label>
+                            <input type="text" name="student_id" required placeholder="e.g., STU001">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" name="name" required placeholder="John Doe">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Department/Major</label>
+                            <input type="text" name="major" placeholder="Computer Science">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Year</label>
+                            <select name="year">
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Starting Year</label>
+                            <input type="number" name="starting_year" value="2024">
+                        </div>
+                    </div>
+                    
+                    <div class="face-capture">
+                        <h4>📸 Capture Face</h4>
+                        <div class="capture-controls">
+                            <video id="reg-video" autoplay playsinline></video>
+                            <div class="capture-buttons">
+                                <button type="button" id="btn-capture" class="btn btn-success">📸 Capture</button>
+                                <button type="button" id="btn-retry" class="btn btn-secondary" style="display:none;">🔄 Retry</button>
+                            </div>
+                        </div>
+                        <div id="preview-container">
+                            <p style="color:#718096;font-size:14px;">Click "Capture" to take a photo</p>
+                        </div>
+                        <input type="hidden" name="face_image" id="face_image" value="">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large">✅ Register Student</button>
+                </form>
+                <a href="/" class="btn btn-secondary" style="margin-top:15px;display:inline-block;">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('reg-video');
+        const canvas = document.createElement('canvas');
+        const preview = document.getElementById('preview-container');
+        const hiddenInput = document.getElementById('face_image');
+        const captureBtn = document.getElementById('btn-capture');
+        const retryBtn = document.getElementById('btn-retry');
+        let captured = false;
+
+        // Start camera
+        navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360 } })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(err => {
+                preview.innerHTML = `
+                    <p style="color:red;">⚠️ Camera access denied. Please upload an image file instead.</p>
+                    <input type="file" accept="image/*" id="file-upload" style="margin-top:10px;">
+                `;
+                document.getElementById('file-upload').onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            hiddenInput.value = e.target.result;
+                            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width:200px;border-radius:8px;border:3px solid #48bb78;">`;
+                            captured = true;
+                            captureBtn.textContent = '✅ Captured';
+                            retryBtn.style.display = 'inline-block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+            });
+
+        // Capture photo
+        captureBtn.onclick = function() {
+            if (captured) {
+                // If already captured, just show the image
+                return;
+            }
+            
+            canvas.width = video.videoWidth || 480;
+            canvas.height = video.videoHeight || 360;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            hiddenInput.value = dataUrl;
+            preview.innerHTML = `<img src="${dataUrl}" alt="Captured face" style="max-width:200px;border-radius:8px;border:3px solid #48bb78;">`;
+            captured = true;
+            captureBtn.textContent = '✅ Captured';
+            retryBtn.style.display = 'inline-block';
+        };
+
+        // Retry
+        retryBtn.onclick = function() {
+            captured = false;
+            hiddenInput.value = '';
+            preview.innerHTML = `<p style="color:#718096;font-size:14px;">Click "Capture" to take a photo</p>`;
+            captureBtn.textContent = '📸 Capture';
+            retryBtn.style.display = 'none';
+            
+            // Restart video
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360 } })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(err => {
+                    preview.innerHTML = '<p style="color:red;">⚠️ Could not restart camera.</p>';
+                });
+        };
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
