@@ -13,7 +13,7 @@ import dlib
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': "https://your-project-id-default-rtdb.firebaseio.com/",
+    'databaseURL': "Firebase_URL",
     'storageBucket': "your-project-id.appspot.com"
 })
 
