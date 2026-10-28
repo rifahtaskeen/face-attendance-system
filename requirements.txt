@@ -1,0 +1,9 @@
+opencv-python
+face-recognition
+numpy
+cvzone
+requests
+python-dotenv
+cloudinary
+firebase-admin
+onnxruntime
